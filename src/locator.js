@@ -4,7 +4,8 @@ const COORD_FORMATTER = Intl.NumberFormat('de-DE', { minimumFractionDigits: 6, m
 const DIST_FORMATTER = Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1, style: 'unit', unit: 'meter' });
 const DEG_FORMATTER = Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1, style: 'unit', unit: 'degree' });
 
-const LOCATION_ID = 'location';
+const LOCATION_LEFT_ID = 'location-left';
+const LOCATION_MIDDLE_ID = 'location-middle';
 const CAMERA_INPUT_ID = 'camera';
 
 //map state
@@ -32,11 +33,12 @@ function configureMap(latLngArray) {
 }
 
 function updatePosition(position) {
-    const locatorDiv = document.getElementById(LOCATION_ID);
+    const locatorLeftDiv = document.getElementById(LOCATION_LEFT_ID);
+    const locatorMiddleDiv = document.getElementById(LOCATION_MIDDLE_ID);
 
     const coords = position.coords;
     console.debug(`got new coordinates: ${coords}`);
-    locatorDiv.innerHTML = `
+    locatorLeftDiv.innerHTML = `
         <dl>
             <dt>LAT</dt>
             <dd>${COORD_FORMATTER.format(coords.latitude)}</dd>
@@ -44,14 +46,16 @@ function updatePosition(position) {
             <dd>${COORD_FORMATTER.format(coords.longitude)}</dd>
             <dt>ALT</dt>
             <dd>${coords.altitude ? DIST_FORMATTER.format(coords.altitude) : '-'}</dd>
+        </dl>`;
+    locatorMiddleDiv.innerHTML = `
+        <dl>
             <dt>ACC</dt>
             <dd>${DIST_FORMATTER.format(coords.accuracy)}</dd>
             <dt>HEAD</dt>
             <dd>${coords.heading ? DEG_FORMATTER.format(coords.heading) : '-'}</dd>
-            <dt>SPED</dt>
+            <dt>SPD</dt>
             <dd>${coords.speed ? DIST_FORMATTER.format(coords.speed) : '-'}</dd>
-        </dl>
-    `;
+        </dl>`;
     var ll = [coords.latitude, coords.longitude];
 
     map.setView(ll);
@@ -63,6 +67,7 @@ function updatePosition(position) {
 /* setup component */
 window.onload = () => {
     const cameraButton = document.getElementById(CAMERA_INPUT_ID);
+    const queryParams = new URLSearchParams(window.location.search);
 
     //setup UI
     cameraButton.src = cameraImage;
@@ -74,7 +79,9 @@ window.onload = () => {
     updatePosition({ coords: { latitude: 47.406653, longitude: 9.744844, altitude: 440, accuracy: 40, heading: 45, speed: 1.8 } });
 
     // setup service worker
-    if ('serviceWorker' in navigator) {
+    const swDisbaled = (queryParams.get('service-worker') === 'disabled');
+    console.debug(`query param 'service-worker': ${queryParams.get('service-worker')}, disabled: ${swDisbaled}`);
+    if (!swDisbaled && 'serviceWorker' in navigator) {
         navigator.serviceWorker.register(
             new URL('serviceworker.js', import.meta.url),
             { type: 'module' }
