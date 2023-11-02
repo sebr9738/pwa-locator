@@ -93,6 +93,11 @@ function updatePosition(position) {
 
   ranger.setLatLng(ll);
   ranger.setRadius(coords.accuracy);
+
+  if (position) {
+    const cameraElement = document.getElementById("camera");
+    cameraElement.removeAttribute("disabled");
+  }
 }
 
 function locate(position) {
@@ -154,7 +159,11 @@ window.onload = () => {
   if ("geolocation" in navigator) {
     /* geolocation is available */
     geolocation = navigator.geolocation;
-    watchID = geolocation.watchPosition(updatePosition, handleErr, GEOLOCATION_OPTIONS);
+    watchID = geolocation.watchPosition(
+      updatePosition,
+      handleErr,
+      GEOLOCATION_OPTIONS
+    );
   }
 };
 
@@ -163,3 +172,10 @@ window.onbeforeunload = (event) => {
     geolocation.clearWatch(watcherId);
   }
 };
+
+function navigateToCamera(){
+    window.location.href = './camera.html';
+}
+
+const cameraElement = document.getElementById('camera');
+cameraElement.addEventListener('click', navigateToCamera);
