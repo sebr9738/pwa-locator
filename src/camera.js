@@ -90,6 +90,25 @@ function takePicture(event) {
   const context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, width, height);
 
+  // Füge Koordinaten zum Bild hinzu
+  const latitude = getParameterByName("latitude");
+  const longitude = getParameterByName("longitude");
+
+  // Zeichne gelben Hintergrund
+  const backgroundX = width / 2 - 110;
+  const backgroundY = height - 16;
+  const backgroundWidth = 220;
+  const backgroundHeight = 16;
+  context.fillStyle = "rgba(255, 255, 0, 0.7)";
+  context.fillRect(backgroundX, backgroundY, backgroundWidth, backgroundHeight);
+
+  const pictureText = `Latitude: ${latitude} - Longitude: ${longitude}`;
+  context.font = "10px Arial";
+  context.fillStyle = "black";
+  context.textAlign = "center";
+  context.textBaseline = "bottom";
+  context.fillText(pictureText, width / 2, height - 2);
+
   canvas.convertToBlob({ type: "image/jpeg" }).then((blob) => {
     canvasImgBlob = blob;
     const imageData = URL.createObjectURL(blob);
