@@ -94,3 +94,16 @@ input#pause:disabled,
 input#save:disabled {
   filter: opacity(0.5);
 }
+
+.leaflet-popup-content-wrapper {
+  width: 250px;
+  height: 180px;
+}
+
+.marker-popup {
+}
+
+.marker-popup-icon {
+  max-width: 200px;
+  max-height: 200px;
+}

@@ -7,9 +7,12 @@ const CANCEL_INPUT_ID = "cancel";
 const PAUSE_INPUT_ID = "pause";
 const SAVE_INPUT_ID = "save";
 
+const reader = new FileReader();
+
 let width = 320; // We will scale the photo width to this
 let height = 0; // This will be computed based on the input stream
 let streaming = false; //flag for a 1st-time init
+let canvasImgBlob = null;
 
 const video = document.getElementById("video");
 const photo = document.getElementById("photo");
@@ -48,6 +51,10 @@ function adjustAspectRations(event) {
   }
 }
 
+function SaveImageWithLocation() {
+  reader.readAsDataURL(canvasImgBlob);
+}
+
 function ShowPhoto() {
   video.style.display = "none";
   photo.style.display = "block";
@@ -59,7 +66,7 @@ function ShowPhoto() {
 
   const saveButton = document.getElementById(SAVE_INPUT_ID);
   saveButton.removeAttribute("disabled");
-  saveButton.addEventListener("click", ShowVideo);
+  saveButton.addEventListener("click", SaveImageWithLocation);
 }
 
 function ShowVideo() {
@@ -76,14 +83,6 @@ function ShowVideo() {
   saveButton.removeEventListener("click", ShowVideo);
 }
 
-function storeBlob(canvasImgBlob) {
-  const reader = new FileReader();
-  reader.onloadend = function () {
-    localStorage.setItem("my-image", reader.result);
-  };
-  reader.readAsDataURL(canvasImgBlob);
-}
-
 function takePicture(event) {
   const width = video.offsetWidth;
   const height = video.offsetHeight;
@@ -91,7 +90,6 @@ function takePicture(event) {
   const context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, width, height);
 
-  var canvasImgBlob;
   canvas.convertToBlob({ type: "image/jpeg" }).then((blob) => {
     canvasImgBlob = blob;
     const imageData = URL.createObjectURL(blob);
@@ -101,6 +99,24 @@ function takePicture(event) {
   });
 
   ShowPhoto();
+}
+
+function getParameterByName(urlParameterName) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlParam = urlParams.get(urlParameterName);
+  return urlParam;
+}
+
+// async function getParameterByName(name, url) {
+//   if (!url) {
+//     url = window.location.href;
+//   }
+//   const params = new URLSearchParams(new URL(url).search);
+//   return params.get(name) || "";
+// }
+
+function navigateToMap() {
+  window.location.href = "./index.html";
 }
 
 //further initializations as soon as a video stream appears
@@ -117,9 +133,16 @@ window.onload = () => {
   saveButton.src = saveImage;
 };
 
-function navigateToMap() {
-  window.location.href = "./index.html";
-}
-
 const cancelElement = document.getElementById(CANCEL_INPUT_ID);
 cancelElement.addEventListener("click", navigateToMap);
+
+reader.onloadend = function () {
+  const latitude = getParameterByName("latitude");
+  const longitude = getParameterByName("longitude");
+
+  const imageIndex = `${latitude}_${longitude}`;
+  localStorage.setItem(imageIndex, reader.result);
+
+  console.log("Image saved!");
+  navigateToMap();
+};

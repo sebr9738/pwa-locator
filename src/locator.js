@@ -1,4 +1,13 @@
 import cameraImage from "./camera.svg";
+import marker2x from "leaflet/dist/images/marker-icon-2x.png";
+import marker from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+const markerIcon = new L.Icon.Default({
+  iconUrl: marker,
+  iconRetinaUrl: marker2x,
+  shadowUrl: markerShadow,
+});
 
 const COORD_FORMATTER = Intl.NumberFormat("de-DE", {
   minimumFractionDigits: 6,
@@ -31,10 +40,11 @@ const GEOLOCATION_OPTIONS = {
 };
 
 //map state
-var map;
-var ranger;
-var geolocation;
-var watchID;
+let map;
+let ranger;
+let geolocation;
+let lastKnownPosition;
+let watchID;
 
 function isTouchDevice() {
   return (
@@ -57,6 +67,37 @@ function configureMap(latLngArray) {
       '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
   ranger = L.circle(latLngArray, { radius: 20.0 }).addTo(map);
+
+  displayImagesOnMap();
+}
+
+function displayImagesOnMap() {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+
+    // Überprüfe, ob der localStorage-Eintrag Koordinaten im Index hat
+    const coordinates = key.split("_");
+    if (coordinates.length === 2) {
+      const latitude = parseFloat(coordinates[0]);
+      const longitude = parseFloat(coordinates[1]);
+
+      // Füge einen Marker auf der Karte hinzu
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        const marker = L.marker([latitude, longitude], {
+          icon: markerIcon,
+        }).addTo(map);
+
+        // Du kannst hier auch weitere Anpassungen am Marker vornehmen
+        // z.B. Popup mit Bild oder Tooltip hinzufügen
+        const imageUrl = localStorage.getItem(key);
+        if (imageUrl) {
+          marker.bindPopup(`<img src="${imageUrl}" alt="Marker Image" class="marker-popup-icon">`, {
+            className: 'marker-popup'
+          });
+        }
+      }
+    }
+  }
 }
 
 function updatePosition(position) {
@@ -97,6 +138,12 @@ function updatePosition(position) {
   if (position) {
     const cameraElement = document.getElementById("camera");
     cameraElement.removeAttribute("disabled");
+
+    // Speichere die letzte Position
+    lastKnownPosition = {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    };
   }
 }
 
@@ -169,13 +216,26 @@ window.onload = () => {
 
 window.onbeforeunload = (event) => {
   if (geolocation) {
-    geolocation.clearWatch(watcherId);
+    geolocation.clearWatch(watchID);
   }
 };
 
-function navigateToCamera(){
-    window.location.href = './camera.html';
+// Beispiel, wie du auf die letzte Position zugreifen kannst
+function getlastKnownPosition() {
+  return lastKnownPosition;
 }
 
-const cameraElement = document.getElementById('camera');
-cameraElement.addEventListener('click', navigateToCamera);
+// Funktion zum Navigieren zur Kamera-Seite mit lastKnownPosition als Parameter in der URL
+function navigateToCamera() {
+  const lastPosition = getlastKnownPosition();
+  if (lastPosition) {
+    const queryString = `?latitude=${lastPosition.latitude}&longitude=${lastPosition.longitude}`;
+    window.location.href = `./camera.html${queryString}`;
+  } else {
+    // Handle the case when there is no lastKnownPosition
+    window.location.href = "./camera.html";
+  }
+}
+
+const cameraElement = document.getElementById("camera");
+cameraElement.addEventListener("click", navigateToCamera);
