@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <script src="camera.js" type="module"></script>
-    <link rel="stylesheet" href="locator.css">
+    <link rel="stylesheet" href="locator.css" />
 
     <title>The Camera</title>
   </head>
@@ -11,12 +11,14 @@
   <body>
     <!-- area used eg by iOS for status icons and the notch / dynamic island -->
     <div class="safe-area">
-        <div class="h-safe-area-inset-top"></div>
+      <div class="h-safe-area-inset-top"></div>
     </div>
 
-    <video id="video">Video stream not available.</video>
-    <!-- <canvas id="canvas"></canvas> -->
-    <img id="photo" alt="The screen capture will appear in this box." />
+    <div class="camera-content">
+      <video id="video">Video stream not available.</video>
+      <!-- <canvas id="canvas"></canvas> -->
+      <img id="photo" alt="The screen capture will appear in this box." />
+    </div>
 
     <div class="footer">
       <input id="save" type="image" disabled="disabled" />
