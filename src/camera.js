@@ -4,7 +4,7 @@ import playImage from "./play-btn.svg";
 import saveImage from "./save.svg";
 
 const CANCEL_INPUT_ID = "cancel";
-const PAUSE_INPUT_ID = "pause";
+const PAUSE_INPUT_ID = "pause-pause";
 const SAVE_INPUT_ID = "save";
 
 const reader = new FileReader();
@@ -45,8 +45,8 @@ function adjustAspectRations(event) {
 
     video.setAttribute("width", width);
     video.setAttribute("height", height);
-    canvas.setAttribute("width", width);
-    canvas.setAttribute("height", height);
+    photo.setAttribute("width", width);
+    photo.setAttribute("height", height);
     streaming = true;
   }
 }
@@ -140,6 +140,7 @@ function navigateToMap() {
 
 //further initializations as soon as a video stream appears
 video.addEventListener("canplay", adjustAspectRations, false);
+photo.style.display = "none";
 
 window.onload = () => {
   const cancelButton = document.getElementById(CANCEL_INPUT_ID);

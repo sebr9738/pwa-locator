@@ -107,16 +107,3 @@ input#save:disabled {
   max-width: 200px;
   max-height: 200px;
 }
-
-.camera-content {
-  width: 100vw;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#video{
-  width: 100%;
-  height: 100%;
-}

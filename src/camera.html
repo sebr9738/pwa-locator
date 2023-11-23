@@ -2,28 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
     <script src="camera.js" type="module"></script>
     <link rel="stylesheet" href="locator.css" />
+    <link rel="stylesheet" href="camera.css">
 
     <title>The Camera</title>
   </head>
 
-  <body>
+  <body class="video-mode">
     <!-- area used eg by iOS for status icons and the notch / dynamic island -->
     <div class="safe-area">
       <div class="h-safe-area-inset-top"></div>
     </div>
 
-    <div class="camera-content">
+    <div id="outlet">
       <video id="video">Video stream not available.</video>
-      <!-- <canvas id="canvas"></canvas> -->
       <img id="photo" alt="The screen capture will appear in this box." />
     </div>
 
-    <div class="footer">
+    <div class="footer btn-bar">
       <input id="save" type="image" disabled="disabled" />
 
-      <input id="pause" type="image" disabled="disabled" />
+      <input id="pause-pause" type="image" disabled="disabled" />
 
       <input id="cancel" type="image" />
     </div>
