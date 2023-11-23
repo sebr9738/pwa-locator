@@ -75,20 +75,16 @@ function displayImagesOnMap() {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
 
-    // Überprüfe, ob der localStorage-Eintrag Koordinaten im Index hat
     const coordinates = key.split("_");
     if (coordinates.length === 2) {
       const latitude = parseFloat(coordinates[0]);
       const longitude = parseFloat(coordinates[1]);
 
-      // Füge einen Marker auf der Karte hinzu
       if (!isNaN(latitude) && !isNaN(longitude)) {
         const marker = L.marker([latitude, longitude], {
           icon: markerIcon,
         }).addTo(map);
 
-        // Du kannst hier auch weitere Anpassungen am Marker vornehmen
-        // z.B. Popup mit Bild oder Tooltip hinzufügen
         const imageUrl = localStorage.getItem(key);
         if (imageUrl) {
           marker.bindPopup(`<img src="${imageUrl}" alt="Marker Image" class="marker-popup-icon">`, {

@@ -9,7 +9,7 @@ const SAVE_INPUT_ID = "save";
 
 const reader = new FileReader();
 
-let width = 320; // We will scale the photo width to this
+let width = 640; // We will scale the photo width to this
 let height = 0; // This will be computed based on the input stream
 let streaming = false; //flag for a 1st-time init
 let canvasImgBlob = null;
@@ -36,7 +36,6 @@ navigator.mediaDevices
   });
 
 function adjustAspectRations(event) {
-  //perform a one-time adjustment of video's and photo's aspect ratio
   if (!streaming) {
     height = (video.videoHeight / video.videoWidth) * width;
     if (isNaN(height)) {
@@ -84,11 +83,11 @@ function ShowVideo() {
 }
 
 function takePicture(event) {
-  const width = video.offsetWidth;
-  const height = video.offsetHeight;
-  const canvas = new OffscreenCanvas(width, height);
+  const videoWidth = video.offsetWidth;
+  const videoHeight = video.offsetHeight;
+  const canvas = new OffscreenCanvas(videoWidth, videoHeight);
   const context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, width, height);
+  context.drawImage(video, 0, 0, width, videoHeight);
 
   // Füge Koordinaten zum Bild hinzu
   const latitude = getParameterByName("latitude");
@@ -96,7 +95,7 @@ function takePicture(event) {
 
   // Zeichne gelben Hintergrund
   const backgroundX = width / 2 - 110;
-  const backgroundY = height - 16;
+  const backgroundY = videoHeight - 16;
   const backgroundWidth = 220;
   const backgroundHeight = 16;
   context.fillStyle = "rgba(255, 255, 0, 0.7)";
@@ -107,7 +106,7 @@ function takePicture(event) {
   context.fillStyle = "black";
   context.textAlign = "center";
   context.textBaseline = "bottom";
-  context.fillText(pictureText, width / 2, height - 2);
+  context.fillText(pictureText, width / 2, videoHeight - 2);
 
   canvas.convertToBlob({ type: "image/jpeg" }).then((blob) => {
     canvasImgBlob = blob;
@@ -126,14 +125,6 @@ function getParameterByName(urlParameterName) {
   return urlParam;
 }
 
-// async function getParameterByName(name, url) {
-//   if (!url) {
-//     url = window.location.href;
-//   }
-//   const params = new URLSearchParams(new URL(url).search);
-//   return params.get(name) || "";
-// }
-
 function navigateToMap() {
   window.location.href = "./index.html";
 }
@@ -146,8 +137,6 @@ window.onload = () => {
   const cancelButton = document.getElementById(CANCEL_INPUT_ID);
   const pauseButton = document.getElementById(PAUSE_INPUT_ID);
   const saveButton = document.getElementById(SAVE_INPUT_ID);
-
-  //setup UI
   cancelButton.src = cancelImage;
   pauseButton.src = pauseImage;
   saveButton.src = saveImage;
